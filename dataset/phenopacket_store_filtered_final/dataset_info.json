@@ -1,0 +1,36 @@
+{
+  "citation": "",
+  "description": "",
+  "features": {
+    "clinical_note": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "gene": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "gene_id": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "cohort": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "disease": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "omim_id": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "pmid": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": ""
+}
