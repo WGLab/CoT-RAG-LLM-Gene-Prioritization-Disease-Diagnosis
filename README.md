@@ -6,29 +6,29 @@ This repository contains the official implementation of a **CoT–RAG** framewor
 
 ---
 
-## Methods (5)
+## Methods
 
 All five methods can be run for **disease diagnosis** (Top-10 diseases) **or** **gene prioritization** (Top-10 genes) by switching the task prompt / extraction function where applicable.
 
-### 1) CoT (Chain-of-Thought)
+### 1) Base Model
+**Script:** `main_script/RareDxGPT_inference_vllm.py`  
+A vLLM-based script for running base models.
+
+### 2) CoT (Chain-of-Thought)
 **Script:** `main_script/RareDxGPT_inference_CoT.py`  
 Single-pass CoT prompting with a strict Top-10 output format (e.g., `POTENTIAL_DISEASES` / `POTENTIAL_GENES`). Uses **vLLM** for generation.
 
-### 2) RAG (Retrieval-Augmented Generation)
+### 3) RAG (Retrieval-Augmented Generation)
 **Script:** `main_script/RareDxGPT_inference_RAG.py`  
 Retrieves knowledge from a **FAISS** index using **PubMedBERT embeddings**, optionally reranks with **ColBERTv2**, and generates a grounded Top-10 list.
 
-### 3) CoT-driven RAG (CoT → Retrieve → Finalize)
+### 4) CoT-driven RAG (CoT → Retrieve → Finalize)
 **Script:** `main_script/RareDxGPT_inference_CoT_driven_RAG.py`  
 Runs multi-step reasoning first, uses intermediate reasoning as the retrieval query, then finalizes the ranked Top-10 list with retrieved evidence.
 
-### 4) RAG-driven CoT (Retrieve → CoT reasoning)
+### 5) RAG-driven CoT (Retrieve → CoT reasoning)
 **Script:** `main_script/RareDxGPT_inference_RAG_driven_CoT.py`  
 Retrieves first, injects retrieved evidence into a CoT-style reasoning prompt, then outputs the Top-10 list.
-
-### 5) vLLM baseline (adapter / LoRA utilities)
-**Script:** `main_script/RareDxGPT_inference_vllm.py`  
-A vLLM-based script for running base models.
 
 ---
 
