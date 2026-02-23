@@ -28,7 +28,7 @@ Retrieves first, injects retrieved evidence into a CoT-style reasoning prompt, t
 
 ### 5) vLLM baseline (adapter / LoRA utilities)
 **Script:** `main_script/RareDxGPT_inference_vllm.py`  
-A vLLM-based script with optional adapter handling for running local checkpoints.
+A vLLM-based script for running base models.
 
 ---
 
