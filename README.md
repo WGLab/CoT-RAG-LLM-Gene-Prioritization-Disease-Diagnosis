@@ -1,62 +1,49 @@
-# CoT-RAG LLM Gene Prioritization & Disease Diagnosis
+# CoT–RAG LLM for Disease Diagnosis & Gene Prioritization
 
-This repository provides inference pipelines for **rare disease diagnosis** and **gene prioritization** from clinical narratives using large language models (LLMs).  
-It implements **Chain-of-Thought (CoT)** prompting, **Retrieval-Augmented Generation (RAG)**, and two hybrid variants (**CoT→RAG** and **RAG→CoT**), plus an **AutoEvaluator** module for systematic evaluation.
+This repository contains the official implementation of a **CoT–RAG** framework that supports **both disease diagnosis and gene prioritization** across **five inference methods**. It includes end-to-end inference scripts, retrieval components (FAISS + biomedical embeddings + reranking), and an automated evaluator.
 
-> Note on data: synthetic clinical notes in this project are generated using GPT-4 based on Phenopacket-Store records (see the associated manuscript / project description in your work).
-
----
-
-## What’s included
-
-### Inference pipelines (in `main_script/`)
-- **CoT (disease diagnosis)**: multi-step reasoning prompt ending with `POTENTIAL_DISEASES` (**exactly 10** items, single quotes).
-  - `main_script/RareDxGPT_inference_CoT.py`
-- **RAG (gene prioritization)**: retrieve knowledge from a FAISS index and output `POTENTIAL_GENES` (**exactly 10** items, single quotes).
-  - `main_script/RareDxGPT_inference_RAG.py`
-- **CoT-driven RAG (CoT → retrieve → finalize)**:
-  - `main_script/RareDxGPT_inference_CoT_driven_RAG.py`
-- **RAG-driven CoT (retrieve → CoT reasoning)**:
-  - `main_script/RareDxGPT_inference_RAG_driven_CoT.py`
-
-### Retrieval stack (used by RAG pipelines)
-- **Vector store**: FAISS index loaded from local disk (`FAISS.load_local(...)`)
-- **Embeddings**: `NeuML/pubmedbert-base-embeddings` via `langchain_huggingface.HuggingFaceEmbeddings`
-- **Reranker**: ColBERTv2 via `ragatouille` (`colbert-ir/colbertv2.0`)
-
-### Evaluation (in `AutoEvaluator/`)
-- Evaluates predicted top-10 lists against ground truth.
-- Supports E1/E2/E3-style matching and aggregate metrics (as implemented in the code).
+**Paper (arXiv):** https://arxiv.org/abs/2503.12286
 
 ---
 
-## Repository structure
+## Methods (5)
+
+All five methods can be run for **disease diagnosis** (Top-10 diseases) **or** **gene prioritization** (Top-10 genes) by switching the task prompt / extraction function where applicable.
+
+### 1) CoT (Chain-of-Thought)
+**Script:** `main_script/RareDxGPT_inference_CoT.py`  
+Single-pass CoT prompting with a strict Top-10 output format (e.g., `POTENTIAL_DISEASES` / `POTENTIAL_GENES`). Uses **vLLM** for generation.
+
+### 2) RAG (Retrieval-Augmented Generation)
+**Script:** `main_script/RareDxGPT_inference_RAG.py`  
+Retrieves knowledge from a **FAISS** index using **PubMedBERT embeddings**, optionally reranks with **ColBERTv2**, and generates a grounded Top-10 list.
+
+### 3) CoT-driven RAG (CoT → Retrieve → Finalize)
+**Script:** `main_script/RareDxGPT_inference_CoT_driven_RAG.py`  
+Runs multi-step reasoning first, uses intermediate reasoning as the retrieval query, then finalizes the ranked Top-10 list with retrieved evidence.
+
+### 4) RAG-driven CoT (Retrieve → CoT reasoning)
+**Script:** `main_script/RareDxGPT_inference_RAG_driven_CoT.py`  
+Retrieves first, injects retrieved evidence into a CoT-style reasoning prompt, then outputs the Top-10 list.
+
+### 5) vLLM baseline (adapter / LoRA utilities)
+**Script:** `main_script/RareDxGPT_inference_vllm.py`  
+A vLLM-based script with optional adapter handling for running local checkpoints.
+
+---
+
+## Repository layout
 
 ```text
 .
 ├── AutoEvaluator/                  # evaluation utilities
 ├── dataset/                        # (optional) local datasets or dataset scripts
-├── main_script/                    # main entrypoints for inference
+├── main_script/                    # inference entrypoints (five methods)
 ├── utils/                          # helper utilities (seed, extraction, etc.)
+├── requirements.txt
 ├── LICENSE
 └── README.md
 ```
-
----
-
-## Requirements
-
-- Python 3.9+ (recommended 3.10)
-- PyTorch + CUDA (recommended for vLLM and embeddings)
-- Key Python packages used in the scripts:
-  - `datasets`, `transformers`, `accelerate`, `vllm`
-  - `langchain`, `langchain_huggingface`, `langchain_community`
-  - `faiss` (backend for FAISS index)
-  - `ragatouille` (ColBERT reranker)
-  - `pandas`, `tqdm`
-
-> Tip: If you don’t have `requirements.txt` yet, generate it from your working environment:
-> `pip freeze > requirements.txt`
 
 ---
 
@@ -69,86 +56,106 @@ cd CoT-RAG-LLM-Gene-Prioritization-Disease-Diagnosis
 conda create -n cotrag python=3.10 -y
 conda activate cotrag
 
-# install dependencies (example)
 pip install -U pip
 pip install -r requirements.txt
 ```
+
+> **Note:** `vllm` and FAISS may require CUDA / platform-specific installation. If `faiss-gpu` is not available for your platform, use `faiss-cpu`.
 
 ---
 
 ## Data & paths (important)
 
-The current scripts use **absolute paths** (e.g., `load_from_disk("/home/...")`, `FAISS.load_local("/home/...")`).  
-To run on your machine, you must update these paths in the scripts or refactor them into CLI args.
+The original scripts contained hard-coded absolute paths (e.g., `/home/...`).  
+This repo version expects **relative paths by default** and exposes common paths as CLI arguments.
 
 Typical inputs:
-- **Clinical note dataset**: loaded via `datasets.load_from_disk(...)`
-- **Reference list**: e.g., `reference_data/disease_name_full.csv`
-- **FAISS index directory**: e.g., `datasets/rag_embedding`
+- **Clinical note dataset**: a HuggingFace dataset directory loaded via `datasets.load_from_disk(...)`
+- **Reference file**: `reference_data/disease_name_full.csv` (or your own list)
+- **FAISS index**: a local directory created previously for retrieval
 
 ---
 
-## Running inference
+## Usage
 
-### 1) CoT disease diagnosis (Top-10 diseases)
+Each script now supports a consistent set of path arguments. Examples below assume:
+
+- dataset directory: `datasets/CoTRAG_clinical_notes`
+- FAISS index directory: `datasets/rag_embedding`
+- reference CSV: `reference_data/disease_name_full.csv`
+- outputs: `outputs/`
+
+### 1) CoT
 ```bash
 python main_script/RareDxGPT_inference_CoT.py \
-  --batch_size 8 \
-  --ratio 0.3 \
-  --seed 42 \
-  --disease bws
+  --data_dir datasets/CoTRAG_clinical_notes \
+  --reference_csv reference_data/disease_name_full.csv \
+  --output_dir outputs/cot \
+  --task disease
 ```
 
-**Expected output format (enforced by prompt):**
-```text
-REASONING:
-Step 1: ...
-...
-POTENTIAL_DISEASES:
-1. 'Disease1'
-...
-10. 'Disease10'
-```
-
-### 2) RAG gene prioritization (Top-10 genes)
+### 2) RAG
 ```bash
 python main_script/RareDxGPT_inference_RAG.py \
-  --batch_size 8 \
-  --ratio 0.3 \
-  --seed 42
+  --data_dir datasets/CoTRAG_clinical_notes \
+  --index_dir datasets/rag_embedding \
+  --reference_csv reference_data/disease_name_full.csv \
+  --output_dir outputs/rag \
+  --task gene
 ```
 
-**Expected output format:**
-```text
-POTENTIAL_GENES:
-1. 'Gene1'
-...
-10. 'Gene10'
-```
-
-### 3) CoT-driven RAG (gene)
+### 3) CoT-driven RAG
 ```bash
-python main_script/RareDxGPT_inference_CoT_driven_RAG.py
+python main_script/RareDxGPT_inference_CoT_driven_RAG.py \
+  --data_dir datasets/CoTRAG_clinical_notes \
+  --index_dir datasets/rag_embedding \
+  --reference_csv reference_data/disease_name_full.csv \
+  --output_dir outputs/cot_driven_rag \
+  --task gene
 ```
 
-### 4) RAG-driven CoT (gene)
+### 4) RAG-driven CoT
 ```bash
-python main_script/RareDxGPT_inference_RAG_driven_CoT.py
+python main_script/RareDxGPT_inference_RAG_driven_CoT.py \
+  --data_dir datasets/CoTRAG_clinical_notes \
+  --index_dir datasets/rag_embedding \
+  --reference_csv reference_data/disease_name_full.csv \
+  --output_dir outputs/rag_driven_cot \
+  --task disease
+```
+
+### 5) vLLM
+```bash
+python main_script/RareDxGPT_inference_vllm.py \
+  --data_dir datasets/bws \
+  --reference_csv reference_data/disease_name_full.csv \
+  --output_dir outputs/vllm \
+  --task disease
 ```
 
 ---
 
-## Notes on models & authentication
+## Outputs
 
-Some scripts call `huggingface_hub.login(token="")`.  
-Set your token via environment variable or edit the script accordingly.
+All scripts write:
+- a raw generation CSV in `--output_dir`
+- extracted Top-10 lists (and evaluator summaries if enabled)
 
-Example:
-```bash
-export HF_TOKEN="YOUR_HF_TOKEN"
+---
+
+## Citation
+
+If you use this codebase, please cite:
+
+```bibtex
+@article{cotrag2025,
+  title={CoT-RAG LLM Gene Prioritization for Disease Diagnosis},
+  author={...},
+  journal={arXiv preprint arXiv:2503.12286},
+  year={2025},
+  url={https://arxiv.org/abs/2503.12286}
+}
 ```
-
-If using vLLM, ensure your GPU environment is compatible and the model path/name is accessible.
 
 ---
 
