@@ -24,12 +24,7 @@ To get started with this project, follow these steps:
    ```
 
 ## Usage
-Once the installation is complete, you can start using the tools in the project:
-1. Import the necessary modules in your Python script:
-   ```python
-   from gene_prioritization import GenePrioritizer
-   ```
-2. Initialize the GenePrioritizer and use it to prioritize genes effectively.
+
 
 ## Contributing
 We welcome contributions from the community. If you would like to contribute, please fork the repository and create a pull request.
