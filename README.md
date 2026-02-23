@@ -148,12 +148,14 @@ All scripts write:
 If you use this codebase, please cite:
 
 ```bibtex
-@article{cotrag2025,
-  title={CoT-RAG LLM Gene Prioritization for Disease Diagnosis},
-  author={...},
-  journal={arXiv preprint arXiv:2503.12286},
-  year={2025},
-  url={https://arxiv.org/abs/2503.12286}
+@misc{wang2026integratingchainofthoughtretrievalaugmented,
+      title={Integrating Chain-of-Thought and Retrieval Augmented Generation Enhances Rare Disease Diagnosis from Clinical Notes}, 
+      author={Zhanliang Wang and Da Wu and Quan Nguyen and Kai Wang},
+      year={2026},
+      eprint={2503.12286},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2503.12286}, 
 }
 ```
 
