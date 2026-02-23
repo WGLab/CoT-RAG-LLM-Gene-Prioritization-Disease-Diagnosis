@@ -90,7 +90,16 @@ Each script now supports a consistent set of path arguments. Examples below assu
 - reference CSV: `reference_data/disease_name_full.csv`
 - outputs: `outputs/`
 
-### 1) CoT
+### 1) Base Model
+```bash
+python main_script/RareDxGPT_inference_vllm.py \
+  --data_dir datasets/bws \
+  --reference_csv reference_data/disease_name_full.csv \
+  --output_dir outputs/vllm \
+  --task disease
+```
+
+### 2) CoT
 ```bash
 python main_script/RareDxGPT_inference_CoT.py \
   --data_dir datasets/CoTRAG_clinical_notes \
@@ -99,7 +108,7 @@ python main_script/RareDxGPT_inference_CoT.py \
   --task disease
 ```
 
-### 2) RAG
+### 3) RAG
 ```bash
 python main_script/RareDxGPT_inference_RAG.py \
   --data_dir datasets/CoTRAG_clinical_notes \
@@ -109,7 +118,7 @@ python main_script/RareDxGPT_inference_RAG.py \
   --task gene
 ```
 
-### 3) CoT-driven RAG
+### 4) CoT-driven RAG
 ```bash
 python main_script/RareDxGPT_inference_CoT_driven_RAG.py \
   --data_dir datasets/CoTRAG_clinical_notes \
@@ -119,22 +128,13 @@ python main_script/RareDxGPT_inference_CoT_driven_RAG.py \
   --task gene
 ```
 
-### 4) RAG-driven CoT
+### 5) RAG-driven CoT
 ```bash
 python main_script/RareDxGPT_inference_RAG_driven_CoT.py \
   --data_dir datasets/CoTRAG_clinical_notes \
   --index_dir datasets/rag_embedding \
   --reference_csv reference_data/disease_name_full.csv \
   --output_dir outputs/rag_driven_cot \
-  --task disease
-```
-
-### 5) vLLM
-```bash
-python main_script/RareDxGPT_inference_vllm.py \
-  --data_dir datasets/bws \
-  --reference_csv reference_data/disease_name_full.csv \
-  --output_dir outputs/vllm \
   --task disease
 ```
 
