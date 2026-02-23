@@ -1,4 +1,4 @@
-# Comprehensive Documentation for CoT-RAG-LLM-Gene-Prioritization-Disease-Diagnosis
+#
 
 ## Overview
 The CoT-RAG-LLM-Gene-Prioritization-Disease-Diagnosis project focuses on utilizing state-of-the-art language models to support gene prioritization efforts in disease diagnosis. This project aims to enhance the understanding of genetic influences on various diseases and ultimately improve diagnostic processes.
@@ -6,7 +6,6 @@ The CoT-RAG-LLM-Gene-Prioritization-Disease-Diagnosis project focuses on utilizi
 ## Features
 - **Gene Prioritization:** Effective algorithms to prioritize genes based on various attributes and disease associations.
 - **Disease Diagnosis:** Integration of machine learning techniques to assist in diagnosing diseases based on genetic data.
-- **User-Friendly Interface:** A simple interface for users to interact with and utilize the available tools.
 
 ## Installation
 To get started with this project, follow these steps:
