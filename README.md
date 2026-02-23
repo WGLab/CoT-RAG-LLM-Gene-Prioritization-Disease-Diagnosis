@@ -10,4 +10,4 @@ Phenopacket-derived clinical notes were synthesized by us in ChatGPT with a spec
 
 ## Reference
 
-Wu D, et al. [Integrating Chain-of-Thought and Retrieval Augmented Generation Enhances Rare Disease Diagnosis from Clinical Notes](https://arxiv.org/abs/2503.12286v1). *arXiv*, arXiv:2503.12286 [cs.CL], 2025
+Wang Z, et al. [Integrating Chain-of-Thought and Retrieval Augmented Generation Enhances Rare Disease Diagnosis from Clinical Notes](https://arxiv.org/abs/2503.12286v1). *arXiv*, arXiv:2503.12286 [cs.CL], 2025
